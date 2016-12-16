@@ -1,3 +1,3 @@
-##### Web scraping the [Mathematics Genealogy Project](http://www.genealogy.ams.org/) using [taggy-lens](https://github.com/alpmestan/taggy-lens)
+#### Web scraping the [Mathematics Genealogy Project](http://www.genealogy.ams.org/) using [taggy-lens](https://github.com/alpmestan/taggy-lens)
 
 I started writing this little script because I wanted to have a genealogic tree but the sample posters they sell at http://www.genealogy.ams.org/posters.php didn't appeal to me. I wanted to customise the tree. I like functional programming and thought this would be a good oportunity to learn about [lenses](https://github.com/ekmett/lens). It was a bit more difficult than I expected and I hope this little script helps other people learn how to use [taggy-lens](https://github.com/alpmestan/taggy-lens).
