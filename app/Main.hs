@@ -17,6 +17,12 @@ url id = "http://www.genealogy.ams.org/id.php?id=" ++ (show id)
 vincent :: Int
 vincent = 165242
 
+gordon :: Int
+gordon = 95717
+
+vauquelin = 158571
+bernoulli = 53410 -- 54440
+
 -- Type for mathematicians
 data M = M { mid :: Int
            , name :: X.Text
@@ -79,27 +85,37 @@ recExtract seen acc (id:queue)
 
 writeDot :: [M] -> IO ()
 writeDot ms = do putStrLn "digraph {"
-                 putStrLn "graph [bgcolor=black,pad=0]"
+                 putStrLn "graph [bgcolor=grey16,pad=1]"
                  putStrLn $ "node [" ++ nodeAttrs ++ "]"
-                 putStrLn "edge [color=brown2]" -- gold
+                 putStrLn "edge [color=brown2,penwidth=2]" -- gold
                  mapM_ printMthm ms
                  putStrLn "}"
   where
-    nodeAttrs = "shape=box,style=\"rounded,filled\",color=white"
+    nodeAttrs = "shape=box,style=\"rounded,filled\",color=white," ++
+                "fontname=\"Helvetica\",fontsize=8"
     printMthm m = let id = mid m in
       do putStrLn $ (show id) ++ " [label=" ++ label m ++ "]"
          mapM_ printLink $ zip (advisors m) (repeat id)
  -- label m = "\"" ++ X.unpack (name m) ++ "\""
     label m = "<<table><tr><td colspan=\"3\">" ++
-              "<font point-size=\"24\">" ++ X.unpack (name m) ++
+              "<font point-size=\"11\">" ++ fmtName (name m) ++
               "</font></td></tr>" ++ concatMap tr (degrees m) ++
               "</table>>"
     tr (deg, uni, year) =
-      "<tr><td>" ++ X.unpack deg  ++ "</td>" ++
-          "<td>" ++ X.unpack uni  ++ "</td>" ++
-          "<td>" ++ X.unpack year ++ "</td></tr>"
+      "<tr><td>" ++ fmtDeg deg  ++ "</td>" ++
+          "<td>" ++ fmtUni uni  ++ "</td>" ++
+          "<td>" ++ fmtYear year ++ "</td></tr>"
     printLink (m1, m2) = putStrLn $ show m1 ++ " -> " ++ show m2
+    fmtName n = X.unpack . X.unwords $ f xs
+      where xs = X.split (\c -> c == '(' || c == ')') n
+            f [x1, x2, x3] = X.words x1 ++ X.words x3
+            f [x1] = [x1]
+            f _ = error "too many parenthesis"
+    fmtDeg d = X.unpack $ X.replace ", " ",<br/>" d
+    fmtUni u = X.unpack $ X.replace "and " "and<br/>" u
+    fmtYear y = X.unpack $ if a == y then y else X.snoc a ' '
+      where a = X.replace ", " ",<br/>" y
 
 main :: IO ()
-main = writeDot =<< recExtract S.empty [] [vincent]
+main = writeDot =<< recExtract (S.fromList [bernoulli, vauquelin]) [] [vincent]
 
